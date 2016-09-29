@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Tic Tac Toe</title>
+    <script
+        src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js">
+    </script>
+
+    <script>
+        size = 4;  // should have global scope...
+        marks = ['X', 'O', 'Z'];  // should start with X, can be extended...
+        currentMark = 0;     // counter for keeping track of which mark to make
+        buttons = [];  // use jquery to get all in the class instead of array?
+        empty = " ";   // value for an empty box
+        scores = [];
+        players = [];
+        scoreMarks = [];
+
+
+        $(document).ready(function () {
+            // Make the boxes
+            makeBoard();
+            setupWinner();
+
+            // also set up the players to detect a win
+            // remake the board for a new game when clicked.
+            $("#btnNewGame").click(function (){
+                for(var i = 0; i < size; i++){
+                    for(var j = 0; j < size; j++){
+                        buttons[i][j].val(empty);
+                    }
+                }
+                setupWinner();
+            });
+        });
+
+    function setupWinner(){
+        // rows and columns
+        // in scores we will start with rows then go to columns then diagionals
+        for(var i = 0; i < size * 2; i++){
+            scores.push(0);
+        }
+
+        // add in the diagionals
+        scores.push(0);
+        scores.push(0);
+
+        scoreMarks.push(1);
+        players.push(size);  // first players mark is always one
+
+        for(var p = 0; p < marks.length - 1; p++){
+            var nextNum = players[players.length -1] + 1;
+            console.log(nextNum);
+            players.push(nextNum * size);
+            scoreMarks.push(nextNum);
+        }
+    }
+
+    /**
+     * @description Will try to detect a win on the board
+     */
+    function detectWin(){
+        for(var i = 0; i < scores.length; i++){
+            if (findOne(players, scores)){
+                alert("The game is over");
+            }
+        }
+
+    }
+
+    /**
+     * @description determine if an array contains one or more items from
+     *    another array.
+     * @param {array} haystack the array to search.
+     * @param {array} arr the array providing items to check for in the
+     *    haystack.
+     * @return {boolean} true|false if haystack contains at least one item
+     *    from arr.
+     */
+    var findOne = function (haystack, arr) {
+        return arr.some(function (v) {
+            return haystack.indexOf(v) >= 0;
+        });
+    };
+
+    /**
+     * @description Function to create the board initially, make 2d array of
+     *   buttons too
+     */
+    function makeBoard(){
+        for(var i = 0; i < size; i++){
+            var row = [];
+            for(var j = 0; j < size; j++){
+                var num = i + '_' + j;
+                var $button = $('<input type="button" id='+num+' class="playBtn" value=" "/>');
+                console.log(num);
+                $button.appendTo($('#XO'));
+                buttonHook(num);
+                row.push($button);
+            }
+            var $newLine = $('<br /><br />');
+            $newLine.appendTo($('#XO'));
+            buttons.push(row);
+        }
+    }  // end makeBoard
+
+
+    /**
+     * @description Function to hook up all of the buttons to clicking and
+     *   displaying
+     */
+    function buttonHook(id){
+        // hook up the buttons on the board
+        $("#XO input").css({ 'height': '100px', 'width': '100px',
+                             'font-size': '75px'  });
+        $('#'+id).click(function() {
+            // Check to make sure we can click it...
+            if ($.inArray($('#'+id).val(), marks ) > -1){
+                alert("Already taken!");
+            } else {
+                $('#'+id).val(marks[currentMark]);
+                console.log("Clicked " + $(this).attr('id'));
+
+                // set up the indicies to populate the scores
+                var idx = id.split('_');
+                // mark the row
+                scores[idx[0]] += scoreMarks[currentMark];
+                // mark the column
+                console.log("Adding: " + scoreMarks[currentMark],idx, size + idx[1],size);
+                scores[parseInt(idx[1], 10) + size] += scoreMarks[currentMark];
+
+                detectWin();
+
+                // increment the mark
+                currentMark ++;
+                currentMark = currentMark % marks.length;
+            }
+        })
+    }  // end buttonHook
+
+    </script>
+</head>
+<body>
+    <div id="XO">
+        <!-- added dynamically -->
+    </div>
+    <input type="button" id="btnNewGame" value="New Game" />
+</body>
+</html>
