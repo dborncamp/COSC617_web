@@ -7,36 +7,64 @@
     </script>
 
     <script>
-        size = 4;  // should have global scope...
-        marks = ['X', 'O', 'Z'];  // should start with X, can be extended...
-        currentMark = 0;     // counter for keeping track of which mark to make
-        buttons = [];  // use jquery to get all in the class instead of array?
-        empty = " ";   // value for an empty box
-        scores = [];
-        players = [];
-        scoreMarks = [];
+    size = 3;  // should have global scope...
+    marks = ['X', 'O'];//, 'y', 'Z', 'W'];  // should start with X, can be extended...
+    currentMark = 0; // counter for keeping track of which mark to make
+    buttons = [];  // use jquery to get all in the class instead of array?
+    empty = " ";   // value for an empty box
 
+    $(document).ready(function () {
+        // Make the boxes
+        makeBoard();
+        setupWinner();
 
-        $(document).ready(function () {
-            // Make the boxes
-            makeBoard();
-            setupWinner();
-
-            // also set up the players to detect a win
-            // remake the board for a new game when clicked.
-            $("#btnNewGame").click(function (){
-                for(var i = 0; i < size; i++){
-                    for(var j = 0; j < size; j++){
-                        buttons[i][j].val(empty);
-                    }
+        // also set up the players to detect a win
+        // remake the board for a new game when clicked.
+        $("#btnNewGame").click(function (){
+            for(var i = 0; i < size; i++){
+                for(var j = 0; j < size; j++){
+                    buttons[i][j].val(empty);
                 }
-                setupWinner();
-            });
+            }
+            setupWinner();
         });
+
+        // Set up the user selection of the board
+        $("#playerSubmit").click(function(){
+            size = parseInt($("#userSize").val());
+            nplayers = parseInt($("#numPlayers").val());
+
+            // reset the marks
+            marks = ['X', 'O', 'y', 'Z', 'W'];
+            marks = marks.slice(0, nplayers);
+
+            resetBoard();
+        });
+
+    });
+
+    function resetBoard(){
+        // reset the buttons
+        $(".playBtn").remove();
+        $("#XO").html('');
+
+        currentMark = 0; // counter for keeping track of which mark to make
+        buttons = [];  // use jquery to get all in the class instead of array?
+
+        buttons = [];
+        scores = [];
+
+        makeBoard();
+        setupWinner();
+
+    }
 
     function setupWinner(){
         // rows and columns
         // in scores we will start with rows then go to columns then diagionals
+        scores = [];
+        players = [];
+        scoreMarks = [];
         for(var i = 0; i < size * 2; i++){
             scores.push(0);
         }
@@ -58,12 +86,18 @@
 
     /**
      * @description Will try to detect a win on the board
+     * @return if it detected a win or not...
      */
     function detectWin(){
+        console.log("Looking for win");
         for(var i = 0; i < scores.length; i++){
             if (findOne(players, scores)){
-                alert("The game is over");
+                alert("The game is over, Player " + marks[currentMark] + "wins.");
+                console.log("The game is over, Player " + marks[currentMark] + "wins.");
+
+                return true;
             }
+            return false;
         }
 
     }
@@ -122,18 +156,33 @@
                 console.log("Clicked " + $(this).attr('id'));
 
                 // set up the indicies to populate the scores
-                var idx = id.split('_');
+                idx = id.split('_');
+                idx[0] = parseInt(idx[0]);
+                idx[1] = parseInt(idx[1]);
                 // mark the row
                 scores[idx[0]] += scoreMarks[currentMark];
+
                 // mark the column
                 console.log("Adding: " + scoreMarks[currentMark],idx, size + idx[1],size);
-                scores[parseInt(idx[1], 10) + size] += scoreMarks[currentMark];
+                scores[idx[1] + size] += scoreMarks[currentMark];
 
-                detectWin();
+                // mark diagional
+                if (idx[0] - idx[1] == 0){
+                    scores[scores.length - 2] += scoreMarks[currentMark];
+                    console.log("Diagional ", scores);
+                }
+                if (idx[0] + idx[0] == size + 1){
+                    scores[scores.length -1] += scoreMarks[currentMark];
+                    console.log("Diagional 2 ", scores);
+                }
 
-                // increment the mark
-                currentMark ++;
-                currentMark = currentMark % marks.length;
+                if (detectWin()){
+                    resetBoard();
+                } else {
+                    // increment the mark
+                    currentMark ++;
+                    currentMark = currentMark % marks.length;
+                }
             }
         })
     }  // end buttonHook
@@ -141,6 +190,12 @@
     </script>
 </head>
 <body>
+    <!--    <form action="demo_form.asp"> -->
+        Number of players: <input type="text" name="numPlayers" id="numPlayers" value="2"><br>
+        size: <input type="text" name="userSize" value="3" id="userSize"><br>
+        <input type="submit" value="Submit" id="playerSubmit">
+    </form>
+    <br><br />
     <div id="XO">
         <!-- added dynamically -->
     </div>
