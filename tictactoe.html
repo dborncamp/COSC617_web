@@ -90,15 +90,31 @@
      */
     function detectWin(){
         console.log("Looking for win");
+
         for(var i = 0; i < scores.length; i++){
             if (findOne(players, scores)){
-                alert("The game is over, Player " + marks[currentMark] + "wins.");
-                console.log("The game is over, Player " + marks[currentMark] + "wins.");
+                console.log("The game is over, Player " + marks[currentMark] + " wins.");
+                console.log(scores);
+                alert("The game is over, Player " + marks[currentMark] + " wins.");
 
                 return true;
             }
-            return false;
+            //return false;
         }
+
+        // look for a cats game, if we have made it this far its possiblely true
+        // if anything is still empty return false, otherwise return true
+        var counter = 0;
+        for(var j = 0; j < size; j++){
+            for(var k = 0; k < size; k++){
+                id = j.toString() + "_" + k.toString();
+                if($("#" + id).val() == empty){
+                    return false;
+                }
+            }
+        }
+        alert("Cats Game! Play again!");
+        return true;
 
     }
 
@@ -111,7 +127,7 @@
      * @return {boolean} true|false if haystack contains at least one item
      *    from arr.
      */
-    var findOne = function (haystack, arr) {
+    function findOne(haystack, arr) {
         return arr.some(function (v) {
             return haystack.indexOf(v) >= 0;
         });
@@ -155,37 +171,84 @@
                 $('#'+id).val(marks[currentMark]);
                 console.log("Clicked " + $(this).attr('id'));
 
-                // set up the indicies to populate the scores
                 idx = id.split('_');
-                idx[0] = parseInt(idx[0]);
-                idx[1] = parseInt(idx[1]);
-                // mark the row
-                scores[idx[0]] += scoreMarks[currentMark];
-
-                // mark the column
-                console.log("Adding: " + scoreMarks[currentMark],idx, size + idx[1],size);
-                scores[idx[1] + size] += scoreMarks[currentMark];
-
-                // mark diagional
-                if (idx[0] - idx[1] == 0){
-                    scores[scores.length - 2] += scoreMarks[currentMark];
-                    console.log("Diagional ", scores);
-                }
-                if (idx[0] + idx[0] == size + 1){
-                    scores[scores.length -1] += scoreMarks[currentMark];
-                    console.log("Diagional 2 ", scores);
-                }
+                markScore(idx)
 
                 if (detectWin()){
+                    console.log("A win has been detected");
                     resetBoard();
                 } else {
                     // increment the mark
                     currentMark ++;
                     currentMark = currentMark % marks.length;
+                    counter = 0;
+
+                    // make it play, assuming there is more than 1 player
+                    do {
+                        counter ++;
+                        console.log(currentMark);
+                        var int1 = getRandomInt(0, size);
+                        var int2 = getRandomInt(0, size);
+                        var testid = int1.toString() + "_" + int2.toString();
+                        console.log(testid)
+
+                        if ($("#"+testid).val() == empty){
+                            console.log(testid + " is empty")
+                            $("#"+testid).val( marks[currentMark]);
+                            var testidx = testid.split('_');
+                            markScore(testidx);
+
+                            currentMark ++;
+                            currentMark = currentMark % marks.length;
+                        }
+                        if (counter > 100){  // Make sure it doesnt get too big
+                            alert("Something bad happened...");
+                            break;
+                        }
+                    } while(currentMark != 0);
+                    
+                     // Maybe the computer won...
+                     if (detectWin()){
+                        console.log("A win has been detected");
+                         resetBoard();
+                     }
+
                 }
             }
         })
     }  // end buttonHook
+
+    function markScore(idx){
+        // set up the indicies to populate the scores
+        idx[0] = parseInt(idx[0]);
+        idx[1] = parseInt(idx[1]);
+        // mark the row
+        scores[idx[0]] += scoreMarks[currentMark];
+
+        // mark the column
+        console.log("Adding: " + scoreMarks[currentMark], scores);
+        scores[idx[1] + size] += scoreMarks[currentMark];
+
+        // mark diagional
+        if (idx[0] == idx[1]){
+            scores[scores.length - 2] += scoreMarks[currentMark];
+            console.log("Diagional ", scores);
+        }
+        // anti diagional
+        if ((idx[0] + idx[1]) == (size-1)){
+            scores[scores.length -1] += scoreMarks[currentMark];
+            console.log("Diagional 1 ", scores);
+        }
+        console.log(scores);
+    }
+
+    // Returns a random integer between min (included) and max (excluded)
+    // Using Math.round() will give you a non-uniform distribution
+    function getRandomInt(min, max) {
+        min = Math.ceil(min);
+        max = Math.floor(max);
+        return Math.floor(Math.random() * (max - min)) + min;
+    }
 
     </script>
 </head>
