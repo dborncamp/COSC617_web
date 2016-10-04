@@ -8,9 +8,8 @@
 
     <script>
     size = 3;  // should have global scope...
-    marks = ['X', 'O'];//, 'y', 'Z', 'W'];  // should start with X, can be extended...
+    marks = ['X', 'O'];// should start with X, can be extended...
     currentMark = 0; // counter for keeping track of which mark to make
-    buttons = [];  // use jquery to get all in the class instead of array?
     empty = " ";   // value for an empty box
 
     $(document).ready(function () {
@@ -18,24 +17,17 @@
         makeBoard();
         setupWinner();
 
-        // also set up the players to detect a win
-        // remake the board for a new game when clicked.
-        $("#btnNewGame").click(function (){
-            for(var i = 0; i < size; i++){
-                for(var j = 0; j < size; j++){
-                    buttons[i][j].val(empty);
-                }
-            }
-            setupWinner();
-        });
-
         // Set up the user selection of the board
         $("#playerSubmit").click(function(){
             size = parseInt($("#userSize").val());
             nplayers = parseInt($("#numPlayers").val());
-
             // reset the marks
-            marks = ['X', 'O', 'y', 'Z', 'W'];
+            marks = ['X', 'O', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
+            // check user input
+            if (nplayers > marks.length - 1){
+                alert("Please select less than " + marks.length + " players.");
+            }
+
             marks = marks.slice(0, nplayers);
 
             resetBoard();
@@ -49,9 +41,6 @@
         $("#XO").html('');
 
         currentMark = 0; // counter for keeping track of which mark to make
-        buttons = [];  // use jquery to get all in the class instead of array?
-
-        buttons = [];
         scores = [];
 
         makeBoard();
@@ -134,8 +123,7 @@
     };
 
     /**
-     * @description Function to create the board initially, make 2d array of
-     *   buttons too
+     * @description Function to create the board initially
      */
     function makeBoard(){
         for(var i = 0; i < size; i++){
@@ -146,18 +134,16 @@
                 console.log(num);
                 $button.appendTo($('#XO'));
                 buttonHook(num);
-                row.push($button);
             }
             var $newLine = $('<br /><br />');
             $newLine.appendTo($('#XO'));
-            buttons.push(row);
         }
     }  // end makeBoard
 
 
     /**
      * @description Function to hook up all of the buttons to clicking and
-     *   displaying
+     *   displaying. Once something is clicked it triggers the computer moves.
      */
     function buttonHook(id){
         // hook up the buttons on the board
@@ -184,28 +170,13 @@
                     counter = 0;
 
                     // make it play, assuming there is more than 1 player
-                    do {
-                        counter ++;
-                        console.log(currentMark);
-                        var int1 = getRandomInt(0, size);
-                        var int2 = getRandomInt(0, size);
-                        var testid = int1.toString() + "_" + int2.toString();
-                        console.log(testid)
-
-                        if ($("#"+testid).val() == empty){
-                            console.log(testid + " is empty")
-                            $("#"+testid).val( marks[currentMark]);
-                            var testidx = testid.split('_');
-                            markScore(testidx);
-
-                            currentMark ++;
-                            currentMark = currentMark % marks.length;
-                        }
-                        if (counter > 100){  // Make sure it doesnt get too big
+                    while(currentMark != 0){
+                        setTimeout(markComputer(), 10000);
+                        if(counter > 100){
                             alert("Something bad happened...");
                             break;
                         }
-                    } while(currentMark != 0);
+                    } 
                     
                      // Maybe the computer won...
                      if (detectWin()){
@@ -217,6 +188,30 @@
             }
         })
     }  // end buttonHook
+
+    function markComputer(){
+        counter ++;
+        console.log(currentMark);
+        var int1 = getRandomInt(0, size);
+        var int2 = getRandomInt(0, size);
+        var testid = int1.toString() + "_" + int2.toString();
+        console.log(testid)
+
+        if ($("#"+testid).val() == empty){
+            console.log(testid + " is empty")
+            $("#"+testid).prop('value', marks[currentMark]);
+            var testidx = testid.split('_');
+            markScore(testidx);
+
+            if (detectWin()){
+                resetBoard();
+                return true;
+            }
+            // update the current mark, no one won yet
+            currentMark ++;
+            currentMark = currentMark % marks.length;
+        }
+    }
 
     function markScore(idx){
         // set up the indicies to populate the scores
@@ -254,7 +249,7 @@
 </head>
 <body>
     <!--    <form action="demo_form.asp"> -->
-        Number of players: <input type="text" name="numPlayers" id="numPlayers" value="2"><br>
+        Number of players (up to 9): <input type="text" name="numPlayers" id="numPlayers" value="2"><br>
         size: <input type="text" name="userSize" value="3" id="userSize"><br>
         <input type="submit" value="Submit" id="playerSubmit">
     </form>
