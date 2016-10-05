@@ -1,0 +1,30 @@
+<!doctype html>
+<html>
+ <head>
+  <title>JSON Demo Slide 13</title>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+ </head>
+ <body>
+    <p>
+    Name: <span id="jname"></span><br /> 
+    Age: <span id="jage"></span><br /> 
+    Address: <span id="jstreet"></span><br /> 
+    Phone: <span id="jphone"></span><br /> 
+   </p>
+   <script>
+    $(document).ready(function () {
+        var JSONObject = {
+            "name": "Joe Oakes",
+            "street": "1600 Woodland RD",
+            "age": 44,
+            "phone": "555 1234567"
+        };
+        $("#jname").html(JSONObject.name);
+        $("#jage").html(JSONObject.age);
+        $("#jstreet").html(JSONObject.street);
+        $("#jphone").html(JSONObject.phone);
+    });
+
+  </script>
+ </body>
+</html>

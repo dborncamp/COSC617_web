@@ -1,0 +1,72 @@
+<html>
+    <head><title>Angular Rest Create</title>
+        <!--Using a content delivery network - watch if they go down so does your site-->
+        <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
+        <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+        
+    </head>
+<body>
+<nav class="navbar navbar-default" role="navigation">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="#">PSU App</a>
+        <button type="button" class="btn btn-default navbar-btn">Sign Out</button>
+        <p class="navbar-text">Signed in as Joe Oakes</p>
+    </div>
+  </div>
+</nav>
+ <div class="panel panel-primary">
+        <div class="panel-heading">
+            <h3 class="panel-title">Student Information</h3>
+        </div>
+    <form data-ng-submit="submit()" data-ng-controller="Ctrl">
+           <div class="form-group">
+                 <label for="studentName" class="col-xs-2 control-label">Student Name:</label>
+                 <div class="col-sm-10">
+                   <input maxlength="40" class="form-control" id="studentName" placeholder="Student Name" data-ng-model="studentName" required >
+                </div>
+                  <label for="studentSSN" class="col-xs-2 control-label">Student SSN:</label>
+                 <div class="col-sm-10">
+                   <input type="text" maxlength="11" class="form-control" id="studentSSN" placeholder="Student SSN" data-ng-model="studentSSN" required >
+                </div>
+                 <label for="studentEmail" class="col-xs-2 control-label">Student Email:</label>
+                 <div class="col-sm-10">
+                   <input type="text" maxlength="25" class="form-control" id="studentEmail" placeholder="Student Email" data-ng-model="studentEmail" required >
+                </div>
+                 <label for="studentPhone" class="col-xs-2 control-label">Student Phone:</label>
+                 <div class="col-sm-10">
+                   <input type="text" maxlength="15" class="form-control" id="studentPhone" placeholder="Student Phone" data-ng-model="studentPhone" required >
+                </div>
+           </div>
+        <p><input type="submit" id="submit" value="Submit" /></p>
+    </form>
+ <p>Response: {{ response }}</p> 
+   </div>
+
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.14/angular.min.js"></script>
+  <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+  <script>
+    function Ctrl($scope) {
+        $scope.submit = function () {
+            //Make sure to change the host and port to match the URL 
+            var query = "http://localhost:27206/RESTService.svc/Create?";
+            query += "studentName=" + $scope.studentName;
+            query += "&studentSSN=" + $scope.studentSSN;
+            query += "&studentEmail=" + $scope.studentEmail;
+            query += "&studentPhone=" + $scope.studentPhone;
+            $.ajax({ url: query, crossDomain: true, dataType: 'json', type: 'GET' })
+            .done(function (json) {
+                $scope.response = json;
+                $scope.$apply();
+            })
+            .fail(function () {
+                alert("Error");
+            });
+        }
+    }
+    </script>
+
+</body>
+</html>
