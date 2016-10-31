@@ -1,0 +1,19 @@
+<!DOCTYPE html><html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+</head>
+<body>
+<input type="text" id="lang"> </input>
+</body>
+        <script type="text/javascript">
+            $.getJSON("http://mymemory.translated.net/api/get?q=Hello%20World!&langpair=en|de")
+                .done(function (json) {
+                    $("#lang").val(json.responseData.translatedText);
+                })
+                .fail(function () {
+                    alert("Error");
+                });
+    </script>
+</html>

@@ -1,0 +1,38 @@
+<!DOCTYPE html> <html xmlns="http://www.w3.org/1999/xhtml"><head><title>Knockout Rest Create</title>
+<!--Using a content delivery network - watch if they go down so does your site-->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="http://ajax.aspnetcdn.com/ajax/knockout/knockout-3.0.0.js"></script>
+</head><body>
+<form data-bind="submit: onSubmit">
+    <p>Student Name: <input data-bind="value: studentName" /></p>
+    <p>Student SSN: <input data-bind="value: studentSSN" /></p>
+    <p>Student Email: <input data-bind="value: studentEmail" /></p>
+    <p>Student Phone: <input data-bind="value: studentPhone" /></p>
+    <p><button type="submit">Submit</button></p>
+</form>
+<p>Response: <span data-bind="text : response"></span></p>
+</body>
+        <script type="text/javascript">
+            var viewModel = {
+                studentName: ko.observable(), studentSSN: ko.observable(),
+                studentEmail: ko.observable(), studentPhone: ko.observable(),
+                response: ko.observable(),
+                onSubmit: function(formElement) {
+                    //Make sure to change the host and port to match the URL 
+                    var query = "http://localhost:3000/Create?";
+                    query += "studentName=" + viewModel.studentName();
+                    query += "&studentSSN=" + viewModel.studentSSN();
+                    query += "&studentEmail=" + viewModel.studentEmail();
+                    query += "&studentPhone=" + viewModel.studentPhone();
+                    $.ajax({ url: query, crossDomain: true, dataType: 'json', type: 'GET' })
+                        .done(function (json) {
+                            viewModel.response(json.result);
+                        })
+                        .fail(function () {
+                            alert("Error");
+                        });
+                }  //Close the onSubmit binding
+            }; //Close the function MyViewModel code block
+            ko.applyBindings(viewModel);
+    </script>
+</html>

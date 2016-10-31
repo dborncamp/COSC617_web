@@ -1,0 +1,27 @@
+<!DOCTYPE html><html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+</head><body>
+<input type="text" id="quoteIn" />
+    <select>
+        <option value="fr">French</option>
+        <option value="it">Italian</option>
+        <option value="de">German</option>
+    </select>
+<input type="text" id="quoteOut" readonly="true" >
+<button onclick="translate()">Translate</button>
+</body>
+        <script type="text/javascript">
+            function translate() {
+                $.getJSON("http://mymemory.translated.net/api/get?q=" + $("#quoteIn").val()
+                    + "&langpair=en|" + $("select option:selected").val())
+                    .done(function (json) {
+                        $("#quoteOut").val(json.responseData.translatedText);
+                    })
+                    .fail(function () {
+
+                        alert("Error");
+                    });
+            }
+
+    </script></html>

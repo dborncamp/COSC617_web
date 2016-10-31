@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Shuttle Website Basics</title>
+<meta charset='utf-8' />
+
+<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.0.1/fullcalendar.min.css" type="text/css" />    
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.15.2/moment.min.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.0.1/fullcalendar.min.js"></script>
+<script src="http://ajax.aspnetcdn.com/ajax/knockout/knockout-3.0.0.js"></script>
+
+
+<script>
+
+	$(document).ready(function() {
+		
+		$('#calendar').fullCalendar({
+			header: {
+				left: 'prev,next today',
+				center: 'title',
+				right: 'month,agendaWeek,agendaDay,listWeek'
+			},
+			defaultDate: '2016-10-12',
+            defaultView: 'basicWeek',
+			navLinks: true, // can click day/week names to navigate views
+			editable: true,
+			eventLimit: true, // allow "more" link when too many events
+			events: [
+				{
+					title: 'All Day Event',
+					start: '2016-10-01'
+				},
+				{
+					title: 'Long Event',
+					start: '2016-10-07',
+					end: '2016-10-10'
+				},
+				{
+					id: 999,
+					title: 'Repeating Event',
+					start: '2016-10-09T16:00:00'
+				},
+				{
+					id: 999,
+					title: 'Repeating Event',
+					start: '2016-10-16T16:00:00'
+				},
+				{
+					title: 'Conference',
+					start: '2016-10-11',
+					end: '2016-10-13'
+				},
+				{
+					title: 'Meeting',
+					start: '2016-10-12T10:30:00',
+					end: '2016-10-12T12:30:00'
+				},
+				{
+					title: 'Lunch',
+					start: '2016-10-12T12:00:00'
+				},
+				{
+					title: 'Meeting',
+					start: '2016-10-12T14:30:00'
+				},
+				{
+					title: 'Happy Hour',
+					start: '2016-10-12T17:30:00'
+				},
+				{
+					title: 'Dinner',
+					start: '2016-10-12T20:00:00'
+				},
+				{
+					title: 'Birthday Party',
+					start: '2016-10-13T07:00:00'
+				},
+				{
+					title: 'Click for Google',
+					url: 'http://google.com/',
+					start: '2016-10-28'
+				}
+			],
+            dayClick: function(date, jsEvent, view, resourceObj) {
+                clickDate = date.format();
+                alert('a day has been clicked!\n'+
+                    'Date: ' + clickDate);
+                dayClicked();
+            }
+		});
+		
+	});
+
+</script>
+<style>
+
+	body {
+		margin: 40px 10px;
+		padding: 0;
+		font-family: "Lucida Grande",Helvetica,Arial,Verdana,sans-serif;
+		font-size: 14px;
+	}
+
+	#calendar {
+		max-width: 400px;
+		margin: 0 auto;
+	}
+
+</style>
+</head>
+<body>
+    <p>Since my website will deal with mostly calendaring, I figured it would be a good idea to figure out a javascript calendar and use clicking it ot tirgger things. I was not able to get knockout working with this calendar, it would give me errors about having too many bindings so I defaulted to using jquery.<br>
+        
+        Start by clicking a day in the calendar.
+        <br><br>
+    </p>
+
+	<div id='calendar'></div>
+
+    <p> Date for Shuttle Request: <span id="displayDate"></span> </p>
+    <!--
+    <p> Date in database: <span id='response' data-bind="text : response"></span> </p>
+    -->
+    <br><br>
+    <p>Read the shuttle:</p>
+    <p>Shuttle ID: <span id="readID" data-bind="value: readID"></span></p>
+    <p>Rider Name: <span id="retRiderName" data-bind="value: riderName"></span></p>
+    <p>Shuttle Date: <span id="rideDate" data-bind="value: rideDate"></span></p>
+
+
+    <br><br>
+    <form>
+        <p>Input here to update the info for the shuttle</p>
+        <p>Name of Rider: <input data-bind="value: riderName" type="text" id="riderNameSubmit" /></p>
+        <p>Shuttle Date (should have the user click the calendar to select...) (format: yyyy-mm-dd): <input date-bind="value:shuttleDate" type="text" id="dateSubmit"/></p>
+        <p><button type="submit" id="submitUpdate">submitUpdate</button></p>
+    </form>
+
+
+    <br><br>
+    <p>Updated shuttle info:</p>
+    <p>Shuttle ID: <span id="updateIDS" data-bind="value: updateIDS"></span></p>
+    <p>Rider Name: <span id="upRiderNameS" data-bind="value: upriderNameS"></span></p>
+    <p>Shuttle Date : <span id="upDateS" data-bind="value: upDateS"></span></p>
+
+    <br><br>
+    <p>Delete the shuttle</p>
+    <p><input type="button" value="Delete Shuttle" id="delShuttle"/></p>
+
+
+    <script type="text/javascript">
+   $(document).ready(function () {
+        // make an update function
+        $("#submitUpdate").click(function(){
+            console.log($('#retRiderName').val);
+            submitUpdate();
+            alert("Things should be updated, but they will be cleared for some reason");
+        });
+
+       // use the delete function
+       $("#delShuttle").click(function(){
+           deleteShuttle();
+       });
+   });
+
+
+    function dayClicked(){
+        console.log("in dayClicked.");
+        console.log(clickDate);
+        var query = "http://localhost:3000/Create?";
+        query += "riderName=" + "Dave"; //$("#riderName").val();
+        query += "date=" + clickDate;
+        console.log(query);
+        $.ajax({ url: query, crossDomain: true, dataType: 'json', type: 'GET' })
+            .done(function (json){
+                $("#displayDate").text(clickDate);
+                // perfrom a request of the database to update
+                // very ineffcient but illustrates the requesting
+
+                getData();
+
+            })
+            .fail(function(){
+                alert("error connecting with node server.");
+            });
+    };
+
+    function getData(){
+        var getQuery = "http://localhost:3000/Read?";
+        getQuery += "shuttleID=" + "123";
+        console.log(getQuery);
+        $.ajax({url:getQuery, crossDomain: true, dataType: 'json', type:"GET"})
+            .done(function(json){
+                console.log(json);
+                //console.log(json.riderName);
+                $("#readID").text(json.shuttleID);
+                $("#retRiderName").text(json.riderName);
+                $("#rideDate").text(json.shuttleDate);
+                // update the input fields
+                $("#riderNameSubmit").val(json.riderName);
+                $("#dateSubmit").val(json.shuttleDate);
+            })
+            .fail(function(){alert("Problem");})
+    }
+
+    function submitUpdate(){
+        var updateQuery = "http://localhost:3000/Update?";
+        updateQuery += "shuttleID=123";
+        updateQuery += "&riderName=" + $("#riderNameSubmit").val();
+        updateQuery += "&shuttleDate=" + $("#dateSubmit").val();
+        console.log(updateQuery);
+        alert(updateQuery);
+        
+        $.ajax({url:updateQuery, crossDomain: true, dataType: 'json', type: 'GET'})
+            .done(function(json){
+                $("#updateIDS").text(json.shuttleID);
+                $("#upRiderNameS").text(json.riderName);
+                $("#upDateS").text(json.shuttleDate);
+            })
+            .fail(function(){alert("Problem updating");})
+        
+    }
+
+    function deleteShuttle(){
+        var deleteQuery = "http://localhost:3000/Delete?";
+        deleteQuery += "shuttleID=123";
+        $.ajax({ url: deleteQuery, crossDomain: true, dataType: 'json', type: 'GET' })
+            .done(function(json){
+                console.log(json);
+                alert(json.status);
+            })
+            .fail(function(){
+                alert("Delete Failed");
+            });
+    }
+
+
+
+// Could not get knockout to work at all for either create or read.
+// There is a binding issue that I assume has to do with the calendar already
+// using bindings...
+//    function getDate(){
+//        var viewModel = {
+//            shuttleID: ko.observable(),
+//            shuttleRider: ko.observable(),
+//            onSubmit: function(formElement) {
+//                var getQuery = "http://localhost:3000/Read"
+//                $.getJSON(getQuery).done(function(json){
+//                    viewModel.shuttleID(json.readID);
+//                    viewModel.shuttleRider(json.riderName);
+//                }).fail(function () {
+//                    alert("Error");
+//                });
+//            }
+//        }
+//    }
+//    ko.applyBindings(viewModel);
+    </script>
+
+</body>
+</html>
+

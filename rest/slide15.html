@@ -1,0 +1,25 @@
+<!DOCTYPE html><html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+</head>
+<body>
+ Title: <input type="text" id="wikiIn" value="AJAJ" / >
+ Page ID: <input type="text" id="pageId" value="4425816"/ >
+ <button onclick="wiki()">Wiki</button><br />
+ <textarea rows="20" cols="50" id="wikiOut"></textarea>
+</body>
+        <script type="text/javascript">
+            function wiki() {
+                var query = "http://en.wikipedia.org/w/api.php?" + "format=json" + "&action=query"
+                    + "&titles=" + $("#wikiIn").val() + "&prop=revisions"+ "&rvprop=content"
+                $.ajax({ url: query, crossDomain: true, dataType: 'jsonp', type: 'GET'})
+                    .done(function (json) {
+                        $("#wikiOut").val(json['query']['pages'][$("#pageId").val()]['revisions'][0]['*']);
+                    })
+                    .fail(function () {
+
+                        alert("Error");
+                    });
+            }
+    </script>
+</html>
