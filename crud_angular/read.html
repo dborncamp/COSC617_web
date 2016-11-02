@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Shuttle Website Basics</title>
+<meta charset='utf-8' />
+
+<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.0.1/fullcalendar.min.css" type="text/css" />    
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.15.2/moment.min.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.0.1/fullcalendar.min.js"></script>
+<script src="http://ajax.aspnetcdn.com/ajax/knockout/knockout-3.0.0.js"></script>
+
+
+<script>
+
+	$(document).ready(function() {
+		
+		$('#calendar').fullCalendar({
+			header: {
+				left: 'prev,next today',
+				center: 'title',
+				right: 'month,agendaWeek,agendaDay,listWeek'
+			},
+			defaultDate: '2016-10-12',
+            defaultView: 'basicWeek',
+			navLinks: true, // can click day/week names to navigate views
+			editable: true,
+			eventLimit: true, // allow "more" link when too many events
+			events: [
+				{
+					title: 'All Day Event',
+					start: '2016-10-01'
+				},
+				{
+					title: 'Long Event',
+					start: '2016-10-07',
+					end: '2016-10-10'
+				},
+				{
+					id: 999,
+					title: 'Repeating Event',
+					start: '2016-10-09T16:00:00'
+				},
+				{
+					id: 999,
+					title: 'Repeating Event',
+					start: '2016-10-16T16:00:00'
+				},
+				{
+					title: 'Conference',
+					start: '2016-10-11',
+					end: '2016-10-13'
+				},
+				{
+					title: 'Meeting',
+					start: '2016-10-12T10:30:00',
+					end: '2016-10-12T12:30:00'
+				},
+				{
+					title: 'Lunch',
+					start: '2016-10-12T12:00:00'
+				},
+				{
+					title: 'Meeting',
+					start: '2016-10-12T14:30:00'
+				},
+				{
+					title: 'Happy Hour',
+					start: '2016-10-12T17:30:00'
+				},
+				{
+					title: 'Dinner',
+					start: '2016-10-12T20:00:00'
+				},
+				{
+					title: 'Birthday Party',
+					start: '2016-10-13T07:00:00'
+				},
+				{
+					title: 'Click for Google',
+					url: 'http://google.com/',
+					start: '2016-10-28'
+				}
+			],
+            dayClick: function(date, jsEvent, view, resourceObj) {
+                clickDate = date.format();
+                alert('a day has been clicked!\n'+
+                    'Date: ' + clickDate);
+                dayClicked();
+            }
+		});
+		
+	});
+
+</script>
+<style>
+
+	body {
+		margin: 40px 10px;
+		padding: 0;
+		font-family: "Lucida Grande",Helvetica,Arial,Verdana,sans-serif;
+		font-size: 14px;
+	}
+
+	#calendar {
+		max-width: 400px;
+		margin: 0 auto;
+	}
+
+</style>
+</head>
+<body>
+    <p>Since my website will deal with mostly calendaring, I figured it would be a good idea to figure out a javascript calendar and use clicking it ot tirgger things. I was not able to get knockout working with this calendar, it would give me errors about having too many bindings so I defaulted to using jquery.<br>
+        
+        Start by clicking a day in the calendar.
+        <br><br>
+    </p>
+
+	<div id='calendar'></div>
+</body>
+</html>

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Shuttle Website Basics</title>
+<meta charset='utf-8' />
+
+<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.0.1/fullcalendar.min.css" type="text/css" />    
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.15.2/moment.min.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.0.1/fullcalendar.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.14/angular.min.js"></script>
+
+
+<script>
+
+	$(document).ready(function() {
+		
+		$('#calendar').fullCalendar({
+			header: {
+				left: 'prev,next today',
+				center: 'title',
+				right: 'month,agendaWeek,agendaDay,listWeek'
+			},
+			defaultDate: '2016-10-12',
+            defaultView: 'agendaWeek',
+			navLinks: true, // can click day/week names to navigate views
+			editable: true,
+			eventLimit: true, // allow "more" link when too many events
+            weekends: false,
+            events: function(start, end, callback){
+
+            },
+            dayClick: function(date, jsEvent, view, resourceObj) {
+                clickDate = date.format();
+                alert('a day has been clicked!\n'+
+                    'Date: ' + clickDate);
+            }
+		});
+		
+    });
+
+
+</script>
+<style>
+
+	body {
+		margin: 40px 10px;
+		padding: 0;
+		font-family: "Lucida Grande",Helvetica,Arial,Verdana,sans-serif;
+		font-size: 14px;
+	}
+
+	#calendar {
+		max-width: 900px;
+		margin: 0 auto;
+	}
+
+</style>
+</head>
+<body data-ng-app>
+    <p>This should use ReadAll to get what is in the database and display it in a calendar.</p>
+    <p>Just click "Read All".</p>
+
+    <div id='calendar'></div>
+
+    <br>
+
+    <div ng-controller='myControl' ng-app='myApp'>
+        <button ng-click='readAll()'>Read All</button>
+        <p>Response: {{ response }}</p>
+    </div>
+
+    <script>
+        shuttles = '';
+        angular.module('myApp', [])
+    .controller('myControl',['$scope', function($scope){
+        $scope.response = 'initial';
+        $scope.readAll = function (){
+            console.log('test');
+            var query = "http://127.0.0.1:3000/ReadAll?";
+            console.log(query);
+
+            $.ajax({url:query, corssDomain: true, dataType: 'json', type: 'GET'})
+            .done(function (json) {
+                console.log(json);
+                $scope.response = json;
+                shuttles = json;
+                $scope.$apply();
+                // update the calendar
+                for(i=0; i<json.length; i++){
+                    $('#calendar').fullCalendar('renderEvent', json[i], true);
+                }
+            })
+            .fail(function(){
+                alert("error");
+            });
+        } //end readAll
+    }]);
+    </script>
+
+</body>
+</html>
