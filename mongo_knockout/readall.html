@@ -1,0 +1,41 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml"><head><title>Knockout Rest Read</title>
+<!--Using a content delivery network - watch if they go down so does your site-->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="http://ajax.aspnetcdn.com/ajax/knockout/knockout-3.0.0.js"></script>
+</head>
+<body>
+<form data-bind="submit: onSubmit">
+    <p><button type="submit">GetAll</button></p>
+</form>
+
+<div class='readList'>
+<h2> Response: </h2>
+The database has the following entries:
+<p>   StudentID   StudentName</p>
+    <ul data-bind='foreach: students'>
+        <li>
+            <p><span data-bind='text: $data.StudentID'></span>  <span data-bind='text: $data.StudentName'></span></p>
+        </li>
+    </ul>
+</div>
+
+</body>
+        <script type="text/javascript">
+            json='';
+            var viewModel = {
+                students: ko.observable(),
+                onSubmit: function (formElement) {
+                    //Make sure to change the host and port to match the URL 
+                    var query = "http://localhost:3000/ReadAll?";
+                    console.log(query);
+                    $.ajax({ url: query, crossDomain: true, dataType: 'json', type: 'GET' })
+                        .done(function (json) {
+                            console.log(json);
+                            viewModel.students(json);
+                        })
+                        .fail(function () { alert("Error");});
+                }  //Close the onSubmit binding
+            }; //Close the function MyViewModel code block
+            ko.applyBindings(viewModel);
+    </script>
+</html>
